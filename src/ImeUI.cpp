@@ -254,8 +254,8 @@ namespace LIBC_NAMESPACE_DECL
                         {
                             ImGui::Text("Ime Enabled %s", "\xe2\x9c\x85"); // green ✅
                         }
-                        ImGui::TableNextRow();
 
+                        ImGui::TableNextRow();
                         ImGui::TableNextColumn();
                         bool const focused = m_pImeWnd->IsFocused();
                         ImGui::Text("Ime Focus: %s", focused ? "\xe2\x9c\x85" : "\xe2\x9d\x8c");

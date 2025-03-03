@@ -6,7 +6,6 @@
 #include "common/log.h"
 #include "configs/AppConfig.h"
 #include "configs/CustomMessage.h"
-#include "context.h"
 #include "hooks/ScaleformHook.h"
 #include "ime/ITextServiceFactory.h"
 
@@ -42,6 +41,25 @@ namespace LIBC_NAMESPACE_DECL
                 if (a_event->menuName == RE::Console::MENU_NAME)
                 {
                     Hooks::ScaleformAllowTextInput::AllowTextInput(a_event->opening);
+                }
+                else
+                {
+                    if (a_event->menuName == RE::CursorMenu::MENU_NAME && !a_event->opening)
+                    {
+                        // stupid fix: MapMenu will not call AllowTextInput(false) when closing
+                        uint8_t textEntryCount = Hooks::ScaleformAllowTextInput::TextEntryCount();
+                        while (textEntryCount > 0)
+                        {
+                            Hooks::ScaleformAllowTextInput::AllowTextInput(false);
+                            textEntryCount--;
+                        }
+                        // check var consistency
+                        textEntryCount = Hooks::ScaleformAllowTextInput::TextEntryCount();
+                        if (textEntryCount != 0)
+                        {
+                            log_warn("Text entry count is incorrect and can't fix it! count: {}", textEntryCount);
+                        }
+                    }
                 }
                 return RE::BSEventNotifyControl::kContinue;
             }
