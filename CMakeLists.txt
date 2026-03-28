@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 4.2)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+option(BUILD_TESTING "Build tests" OFF)
+
+if (BUILD_TESTING)
+  list(APPEND VCPKG_MANIFEST_FEATURES "test-deps")
+endif ()
+
 project(
     SimpleIME
     VERSION 2.0.0
@@ -17,13 +27,24 @@ else()
 endif()
 
 configure_file(
-    ${JAMIE_MODS_DIR}/cmake/version.rc.in
+    ${CMAKE_SOURCE_DIR}/cmake/version.rc.in
     ${CMAKE_CURRENT_BINARY_DIR}/version.rc
     @ONLY
 )
 
-#set(CMAKE_CXX_CLANG_TIDY "clang-tidy;--checks=*,-llvmlibc-*,-fuchsia-*;--config-file=${JAMIE_MODS_DIR}/.clang-tidy;--extra-arg=/EHsc")
+set(EXTERN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern)
+set(JAMIE_MODS_DIR ${EXTERN_DIR}/JamieMods)
+set(CommonLibSSE_NG_DIR ${EXTERN_DIR}/CommonLibSSE-NG)
 set(TEST_PROJ_NAME "${PROJECT_NAME}Test")
+
+add_subdirectory(${JAMIE_MODS_DIR} EXCLUDE_FROM_ALL)
+
+include(${JAMIE_MODS_DIR}/cmake/imgui-config.cmake)
+include(${EXTERN_DIR}/CommonLibSSE-NG/cmake/CommonLibSSE.cmake)
+set(_OLD_BUILD_TESTS ${BUILD_TESTS})
+set(BUILD_TESTS OFF) # forbid CommonLibSSE-NG from building its tests, since we only want to build our own tests, and CommonLibSSE-NG's tests are not relevant to us and would just slow down the build
+add_subdirectory(${CommonLibSSE_NG_DIR} EXCLUDE_FROM_ALL)
+set(BUILD_TESTS ${_OLD_BUILD_TESTS})
 
 file(GLOB_RECURSE headers include/*.h include/*.hpp include/*.cpp)
 file(GLOB_RECURSE sources src/*.cpp)
@@ -46,9 +67,6 @@ find_path(DETOURS_INCLUDE_DIRS "detours/detours.h")
 find_library(DETOURS_LIBRARY detours REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
-include(${JAMIE_MODS_DIR}/cmake/imgui-config.cmake)
-include(${JAMIE_MODS_EXTERN_DIR}/CommonLibSSE-NG/cmake/CommonLibSSE.cmake)
-
 if (BUILD_TESTING)
   include(${CMAKE_CURRENT_SOURCE_DIR}/test.cmake)
 endif ()
@@ -59,7 +77,6 @@ add_commonlibsse_plugin(${PROJECT_NAME} SOURCES
     ${ImGui_Basic_Sources}
     ${ImGui_Backend_Win32_Dx11_Sources}
     ${ImGui_FreeType_Sources}
-#    ${IMGUI_DEMO_SOURCES}
     ${IMGUIEX_DIR}/imguiex/m3.cpp
     ${IMGUIEX_DIR}/imguiex/imguiex_m3.cpp
     ${IMGUIEX_DIR}/imguiex/imguiex_m3_slider.cpp
@@ -82,7 +99,7 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
-    ${JAMIE_MODS_COMMON_DIR}
+        ${JAMIE_MODS_DIR}/common
     ${IMGUIEX_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
@@ -168,8 +185,8 @@ set(CPACK_GENERATOR "7Z")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION_DISPLAY})
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_BUILD_TYPE}")
-set(CPACK_OUTPUT_FILE_PREFIX "${JAMIE_MODS_DIR}/dist")
-set(CPACK_PACKAGE_DIRECTORY "${JAMIE_MODS_DIR}/dist")
+set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_SOURCE_DIR}/dist")
+set(CPACK_PACKAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/dist")
 include(CPack)
 
 ############################################################
@@ -200,7 +217,7 @@ endif ()
 
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/README.md
-    ${JAMIE_MODS_DIR}/LICENSE
+        ${CMAKE_SOURCE_DIR}/LICENSE
     DESTINATION .
     COMPONENT doc
 )

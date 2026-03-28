@@ -1,0 +1,165 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 2,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "common",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_CXX_FLAGS": "$env{PROJECT_PLATFORM_FLAGS} $env{PROJECT_TEXT_FLAGS} $env{PROJECT_COMPILER_FLAGS} $penv{CXX_FLAGS}"
+      }
+    },
+    {
+      "name": "x64",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "environment": {
+        "PROJECT_ARCHITECTURE": "x64"
+      }
+    },
+    {
+      "name": "generator-ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "generator-vs-2022",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022"
+    },
+    {
+      "name": "packaging-vcpkg",
+      "hidden": true,
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "USE_VCPKG": "ON",
+        "VCPKG_INSTALLED_DIR": "${sourceDir}/build/vcpkg_modules",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
+        "VCPKG_HOST_TRIPLET": "$env{PROJECT_ARCHITECTURE}-$env{PROJECT_PLATFORM}-static-md",
+        "VCPKG_TARGET_TRIPLET": "$env{PROJECT_ARCHITECTURE}-$env{PROJECT_PLATFORM}-static-md",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL",
+        "VCPKG_MANIFEST_FEATURES": "imgui-deps;commonlib-sse-deps"
+      }
+    },
+    {
+      "name": "compiler-clang-cl",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      },
+      "environment": {
+        "CC": "clang-cl",
+        "CXX": "clang-cl",
+        "PROJECT_COMPILER_FLAGS": "/permissive- /EHsc /W4 -Wno-overloaded-virtual -Wno-delete-non-abstract-non-virtual-dtor -Wno-inconsistent-missing-override -Wno-reinterpret-base-class"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-msvc-x64",
+          "enableMicrosoftCodeAnalysis": true,
+          "enableClangTidyCodeAnalysis": true
+        }
+      }
+    },
+    {
+      "name": "win32",
+      "hidden": true,
+      "environment": {
+        "PROJECT_PLATFORM_FLAGS": "-DWIN32_LEAN_AND_MEAN -DNOMINMAX",
+        "PROJECT_PLATFORM": "windows"
+      }
+    },
+    {
+      "name": "win32-unicode",
+      "hidden": true,
+      "inherits": "win32",
+      "environment": {
+        "PROJECT_TEXT_FLAGS": "-DUNICODE -D_UNICODE"
+      }
+    },
+    {
+      "name": "builttype-debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "builttype-RelWithDebInfo",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "builttype-release",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug-clangcl-ninja-vcpkg",
+      "inherits": [
+        "common",
+        "x64",
+        "win32-unicode",
+        "generator-ninja",
+        "builttype-debug",
+        "packaging-vcpkg",
+        "compiler-clang-cl"
+      ]
+    },
+    {
+      "name": "RelWithDebInfo-clangcl-ninja-vcpkg",
+      "inherits": [
+        "common",
+        "x64",
+        "win32-unicode",
+        "generator-ninja",
+        "builttype-RelWithDebInfo",
+        "packaging-vcpkg",
+        "compiler-clang-cl"
+      ]
+    },
+    {
+      "name": "release-clangcl-ninja-vcpkg",
+      "inherits": [
+        "common",
+        "x64",
+        "win32-unicode",
+        "generator-ninja",
+        "builttype-release",
+        "packaging-vcpkg",
+        "compiler-clang-cl"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-debug-clangcl-ninja-vcpkg",
+      "displayName": "Debug (clang-cl ninja vcpkg)",
+      "configurePreset": "debug-clangcl-ninja-vcpkg"
+    },
+    {
+      "name": "build-RelWithDebInfo-clangcl-ninja-vcpkg",
+      "displayName": "RelWithDebInfo (clang-cl ninja vcpkg)",
+      "configurePreset": "RelWithDebInfo-clangcl-ninja-vcpkg"
+    },
+    {
+      "name": "build-release-clangcl-ninja-vcpkg",
+      "displayName": "Release (clang-cl ninja vcpkg)",
+      "configurePreset": "release-clangcl-ninja-vcpkg"
+    }
+  ]
+}

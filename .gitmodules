@@ -1,0 +1,9 @@
+[submodule "extern/CommonLibSSE-NG"]
+	path = extern/CommonLibSSE-NG
+	url = https://github.com/alandtse/CommonLibVR
+[submodule "extern/imgui"]
+	path = extern/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "extern/JamieMods"]
+	path = extern/JamieMods
+	url = https://github.com/cyfewlp/JamieMods.git

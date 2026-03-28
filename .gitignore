@@ -1,0 +1,36 @@
+# This file specifies files / folders which will be ignored by git.
+#
+# If you want to add one of these files to git, either remove the matching line from this
+# file or force add the file/folder into git using `git -f add [path]`
+
+# IDE / text editor profile files
+.idea
+.vs
+.vscode/settings.json
+.obsidian
+
+# Possible C++ build output directories and files
+out
+build
+# install: make dist: cpack
+install
+dist
+enc_temp_folder
+cmake-build*
+*.dll
+*.pdb
+*.exe
+*.obj
+imgui.ini
+*/benchmarks/scratch_*
+
+# Skyrim archive files
+*.bsa
+/vcpkg_installed
+Data/SKSE/Plugins/version*.bin
+/Folder.DotSettings.user
+/scripts/game-profile
+
+##
+dev/
+private/

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    "detours",
+    "spdlog"
+  ],
+  "features": {
+    "imgui-deps": {
+      "description": "Adds dependencies for ImGui.",
+      "dependencies": [
+        "freetype"
+      ]
+    },
+    "commonlib-sse-deps": {
+      "description": "Adds dependencies for CommonlibSSE.",
+      "dependencies": [
+        "directxtk",
+        "rapidcsv"
+      ]
+    },
+    "test-deps": {
+      "description": "Adds dependencies for testing.",
+      "dependencies": [
+        "gtest",
+        "benchmark"
+      ]
+    }
+  }
+}
