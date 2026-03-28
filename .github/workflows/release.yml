@@ -88,6 +88,10 @@ jobs:
         with:
           config: cliff.toml
           args: --latest --strip header
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # -----------------------------------------------------------------------
       # GitHub Release — create release with auto-generated changelog from
@@ -99,6 +103,6 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: SimpleIME ${{ github.ref_name }}
           make_latest: true
-          prerelease: false
           body: ${{ steps.cliff.outputs.content }}
           files: dist/*.7z
+          token: ${{ secrets.GITHUB_TOKEN }}
