@@ -103,6 +103,6 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: SimpleIME ${{ github.ref_name }}
           make_latest: true
-          body: ${{ steps.cliff.outputs.content }}
+          body_path: ${{ steps.cliff.outputs.changelog }}
           files: dist/*.7z
           token: ${{ secrets.GITHUB_TOKEN }}
