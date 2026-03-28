@@ -60,7 +60,7 @@ void ImeController::ActivateLangProfile(const GUID &guidProfile) const
 {
     if (!IsReady()) return;
 
-    AddTask([&] {
+    AddTask([&] -> void {
         if (IsModEnabled() && FAILED(m_imeWnd->ActivateLanguageProfile(guidProfile)))
         {
             const auto strGuid = WCharUtils::ToString(ToStringFromGUID2(guidProfile));
@@ -73,7 +73,7 @@ auto ImeController::CommitCandidate(DWORD index) const -> void
 {
     if (!IsReady()) return;
 
-    AddTask([this, index] {
+    AddTask([this, index] -> void {
         if (IsModEnabled())
         {
             m_imeWnd->CommitCandidate(index);
@@ -85,7 +85,7 @@ auto ImeController::SetConversionMode(DWORD conversionMode) const -> void
 {
     if (!IsReady()) return;
 
-    AddTask([this, conversionMode] {
+    AddTask([this, conversionMode] -> void {
         if (IsModEnabled())
         {
             m_imeWnd->SetConversionMode(conversionMode);
@@ -97,7 +97,7 @@ void ImeController::EnableIme(bool enable) const
 {
     if (!IsReady()) return;
 
-    AddTask([this, enable] {
+    AddTask([this, enable] -> void {
         if (IImeModule::IsFailed(DoEnableIme(enable)))
         {
             ErrorNotifier::GetInstance().Warning("Unexpected error: EnableIme failed.");
@@ -109,7 +109,7 @@ void ImeController::ForceFocusIme() const
 {
     if (!IsReady()) return;
 
-    AddTask([this] {
+    AddTask([this] -> void {
         if (IImeModule::IsFailed(DoForceFocusIme()))
         {
             ErrorNotifier::GetInstance().Warning("Unexpected error: ForceFocusIme failed.");
@@ -121,7 +121,7 @@ void ImeController::SyncImeState()
 {
     if (!IsReady()) return;
 
-    AddTask([this] {
+    AddTask([this] -> void {
         if (IImeModule::IsFailed(DoSyncImeState()))
         {
             ErrorNotifier::GetInstance().Warning("Unexpected error: SyncImeState failed");
@@ -133,7 +133,7 @@ void ImeController::TryFocusIme() const
 {
     if (!IsReady()) return;
 
-    AddTask([this] {
+    AddTask([this] -> void {
         if (IImeModule::IsFailed(DoTryFocusIme()))
         {
             ErrorNotifier::GetInstance().Warning("Unexpected error: TryFocusIme failed");

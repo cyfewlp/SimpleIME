@@ -2,10 +2,10 @@
 // Created by jamie on 2025/5/21.
 //
 
-#ifndef TASKQUEUE_H
-#define TASKQUEUE_H
+#pragma once
 
 #include <functional>
+#include <mutex>
 #include <queue>
 
 namespace Ime
@@ -18,42 +18,38 @@ public:
     void AddImeThreadTask(Task &&task)
     {
         const std::scoped_lock lock(m_mutex);
-        m_imeThreadTasks.push(std::forward<Task>(task));
+        m_imeThreadTasks.push(std::move(task));
     }
 
     void AddMainThreadTask(Task &&task)
     {
         const std::scoped_lock lock(m_mutex);
-        m_mainThreadTasks.push(std::forward<Task>(task));
+        m_mainThreadTasks.push(std::move(task));
     }
 
-    void ExecuteImeThreadTasks()
+private:
+    auto SwapTaskQueue(std::queue<Task> &taskQueue) -> std::queue<Task>
     {
         const std::scoped_lock lock(m_mutex);
-        if (m_imeThreadTasks.empty())
+        std::queue<Task>       temp;
+        taskQueue.swap(temp);
+        return temp;
+    }
+
+    void ExecutesTasks(std::queue<Task> &tasks)
+    {
+        std::queue<Task> newTaskQueue = SwapTaskQueue(tasks);
+        while (!newTaskQueue.empty())
         {
-            return;
-        }
-        while (!m_imeThreadTasks.empty())
-        {
-            m_imeThreadTasks.front()();
-            m_imeThreadTasks.pop();
+            newTaskQueue.front()();
+            newTaskQueue.pop();
         }
     }
 
-    void ExecuteMainThreadTasks()
-    {
-        const std::scoped_lock lock(m_mutex);
-        if (m_mainThreadTasks.empty())
-        {
-            return;
-        }
-        while (!m_mainThreadTasks.empty())
-        {
-            m_mainThreadTasks.front()();
-            m_mainThreadTasks.pop();
-        }
-    }
+public:
+    void ExecuteImeThreadTasks() { ExecutesTasks(m_imeThreadTasks); }
+
+    void ExecuteMainThreadTasks() { ExecutesTasks(m_mainThreadTasks); }
 
     static auto GetInstance() -> TaskQueue &
     {
@@ -67,5 +63,3 @@ private:
     std::queue<Task> m_mainThreadTasks;
 };
 } // namespace Ime
-
-#endif // TASKQUEUE_H

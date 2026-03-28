@@ -118,7 +118,7 @@ void InitializeMessaging()
 {
     using State = Ime::Core::State;
     // ReSharper disable once CppParameterMayBeConstPtrOrRef
-    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *a_msg) {
+    SKSE::GetMessagingInterface()->RegisterListener([](SKSE::MessagingInterface::Message *a_msg) -> void {
         if (a_msg->type == SKSE::MessagingInterface::kPreLoadGame)
         {
             State::GetInstance().Set(State::GAME_LOADING);
