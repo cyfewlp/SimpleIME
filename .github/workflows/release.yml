@@ -87,7 +87,7 @@ jobs:
         id: cliff
         with:
           config: cliff.toml
-          args: v2.0.0..HEAD --strip header
+          args: --latest --strip header
 
       # -----------------------------------------------------------------------
       # GitHub Release — create release with auto-generated changelog from
@@ -100,5 +100,5 @@ jobs:
           name: SimpleIME ${{ github.ref_name }}
           make_latest: true
           prerelease: false
-          body: ${{ steps.git-cliff.outputs.content }}
+          body: ${{ steps.cliff.outputs.content }}
           files: dist/*.7z
