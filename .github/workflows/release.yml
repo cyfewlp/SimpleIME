@@ -81,6 +81,13 @@ jobs:
       - name: Package SimpleIME (CPack → dist/)
         run: cpack --config build/release-clangcl-ninja-vcpkg/CPackConfig.cmake
 
+      - name: Generate Changelog
+        uses: orhun/git-cliff-action@v4
+        id: cliff
+        with:
+          config: cliff.toml
+          args: -c github --latest --strip header
+
       # -----------------------------------------------------------------------
       # GitHub Release — create release with auto-generated changelog from
       # PR merges / commits since the previous tag, then attach the artifact.
@@ -90,7 +97,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: SimpleIME ${{ github.ref_name }}
-          generate_release_notes: true   # auto-generate "What's Changed" from commits/PRs
           make_latest: true
           prerelease: false
+          body: ${{ steps.cliff.outputs.changelog }}
           files: dist/*.7z
