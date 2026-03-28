@@ -22,7 +22,7 @@ cmake-build*
 *.exe
 *.obj
 imgui.ini
-*/benchmarks/scratch_*
+benchmarks/scratch_*
 
 # Skyrim archive files
 *.bsa

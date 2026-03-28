@@ -4,6 +4,7 @@ Native IME (Input Method Editor) support for Skyrim SE/AE — type Chinese, Japa
 other multi-byte languages in the game console and any text field.
 
 [![Nexus Mods](https://img.shields.io/badge/NexusMods-SimpleIME-orange?style=flat-square&logo=nexusmods)](https://www.nexusmods.com/skyrimspecialedition/mods/140136)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ## Features
 
@@ -12,6 +13,31 @@ other multi-byte languages in the game console and any text field.
 - Dynamic theming via Material You (seed-color → full palette)
 - Fully translatable UI (`.toml` translation files, hot-reload)
 - Font picker: choose any installed or local font per script (Latin / CJK / emoji)
+
+## Getting started
+
+```bash
+git clone --recurse-submodules https://github.com/cyfewlp/SimpleIME.git
+cd SimpleIME
+```
+
+If you already cloned without `--recurse-submodules`:
+
+```bash
+git submodule update --init --recursive
+```
+
+### Requirements
+
+- [Visual Studio 2022](https://visualstudio.microsoft.com/) (Community edition is fine)
+- [LLVM](https://github.com/llvm/llvm-project) — provides `clang-cl`, `clang-format`, `clang-tidy`
+- [CMake](https://cmake.org/) ≥ 4.2
+- [vcpkg](https://github.com/microsoft/vcpkg) — set `VCPKG_ROOT` to the vcpkg folder
+- [FontForge](https://fontforge.org/) — required for icon font generation at configure time
+- Python 3 — required by CMake build scripts
+
+This project depends on [JamieMods](https://github.com/cyfewlp/JamieMods) as a submodule
+(`extern/JamieMods`), which provides shared build infrastructure and the ImGui/MD3 component library.
 
 ## Environment variables
 
@@ -24,38 +50,38 @@ other multi-byte languages in the game console and any text field.
 
 **Debug** (default for development):
 ```shell
-cmake --preset simple-ime-debug-clangcl-ninja-vcpkg
+cmake --preset debug-clangcl-ninja-vcpkg
 ```
 
 **Release with debug info** (for distribution testing):
 ```shell
-cmake --preset simple-ime-RelWithDebInfo-clangcl-ninja-vcpkg
+cmake --preset RelWithDebInfo-clangcl-ninja-vcpkg
 ```
 
 ## Build
 
 ```shell
 # configure first if not done yet
-cmake --preset simple-ime-debug-clangcl-ninja-vcpkg
+cmake --preset debug-clangcl-ninja-vcpkg
 
 # build the plugin
-cmake --build --preset build-simple-ime-release-clangcl-ninja-vcpkg --target SimpleIME
+cmake --build --preset build-release-clangcl-ninja-vcpkg --target SimpleIME
 
 # package (creates the mod archive)
-cpack --config build/simple-ime-debug-clangcl-ninja-vcpkg/CPackConfig.cmake
+cpack --config build/debug-clangcl-ninja-vcpkg/CPackConfig.cmake
 ```
 
-For a release build substitute `simple-ime-debug-clangcl-ninja-vcpkg` with
-`simple-ime-relwithdebinfo-clangcl-ninja-vcpkg` or `simple-ime-release-clangcl-ninja-vcpkg`.
+For a release build substitute `debug-clangcl-ninja-vcpkg` with
+`relwithdebinfo-clangcl-ninja-vcpkg` or `release-clangcl-ninja-vcpkg`.
 
 ## Test
 
 Tests are off by default. Pass `-DBUILD_TESTING=ON` at configure time:
 
 ```shell
-cmake --preset simple-ime-debug-clangcl-ninja-vcpkg -DBUILD_TESTING=ON
-cmake --build --preset build-simple-ime-debug-clangcl-ninja-vcpkg --target SimpleIMETest
-ctest --test-dir build/simple-ime-debug-clangcl-ninja-vcpkg/SimpleIME
+cmake --preset debug-clangcl-ninja-vcpkg -DBUILD_TESTING=ON
+cmake --build --preset build-debug-clangcl-ninja-vcpkg --target SimpleIMETest
+ctest --test-dir build/debug-clangcl-ninja-vcpkg/SimpleIME
 ```
 
 ## Configuration
