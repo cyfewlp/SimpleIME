@@ -86,7 +86,7 @@ jobs:
         id: cliff
         with:
           config: cliff.toml
-          args: -c github --latest --strip header
+          args: --latest --strip header
 
       # -----------------------------------------------------------------------
       # GitHub Release — create release with auto-generated changelog from
