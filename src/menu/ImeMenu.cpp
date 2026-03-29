@@ -85,17 +85,21 @@ auto ImGui_ImplWin32_GetMouseSourceFromMessageExtraInfo() -> ImGuiMouseSource
     return ImGuiMouseSource_Mouse;
 }
 
-// Send a fake KeyEvent to Console
-// to avoid ignoring CharEvent due to the Console being held down by Ctrl.
-auto SendFakeControlUpEvent() -> bool
+/**
+ * @brief Release ctrl key
+ * If we support Unicode paste, we must prevent other menu handling paste by ctrl+v, otherwise the pasted text will be injected into the game twice.
+ * So we need to release ctrl key manually after paste. At the same time, console will ignore character input when ctrl is held down.
+ * @return true if successfully released, false otherwise
+ */
+auto ReleaseCtrl() -> bool
 {
-    auto *pInterfaceStrings = RE::InterfaceStrings::GetSingleton();
-    auto *pFactoryManager   = RE::MessageDataFactoryManager::GetSingleton();
-    if (!pInterfaceStrings || !pFactoryManager)
+    const auto *interfaceStrings = RE::InterfaceStrings::GetSingleton();
+    const auto *factoryManager   = RE::MessageDataFactoryManager::GetSingleton();
+    if ((interfaceStrings == nullptr) || (factoryManager == nullptr))
     {
         return false;
     }
-    if (const auto *pFactory = pFactoryManager->GetCreator<RE::BSUIScaleformData>(pInterfaceStrings->bsUIScaleformData))
+    if (const auto *pFactory = factoryManager->GetCreator<RE::BSUIScaleformData>(interfaceStrings->bsUIScaleformData))
     {
         if (auto *pScaleFormMessageData = pFactory->Create())
         {
@@ -104,9 +108,7 @@ auto SendFakeControlUpEvent() -> bool
             pEvent->keyCode                       = RE::GFxKey::kControl;
             pScaleFormMessageData->scaleformEvent = pEvent;
 
-            RE::UIMessageQueue::GetSingleton()->AddMessage(
-                RE::InterfaceStrings::GetSingleton()->console, RE::UI_MESSAGE_TYPE::kScaleformEvent, pScaleFormMessageData
-            );
+            RE::UIMessageQueue::GetSingleton()->AddMessage(interfaceStrings->topMenu, RE::UI_MESSAGE_TYPE::kScaleformEvent, pScaleFormMessageData);
             return true;
         }
     }
@@ -377,7 +379,7 @@ auto ImeMenu::OnCharEvent(const GFxCharEvent *charEvent) const -> RE::UI_MESSAGE
 
     if (IsEnabledPaste() && IsPaste(charEvent))
     {
-        return SendFakeControlUpEvent() && Paste() ? RE::UI_MESSAGE_RESULTS::kHandled : RE::UI_MESSAGE_RESULTS::kPassOn;
+        return ReleaseCtrl() && Paste() ? RE::UI_MESSAGE_RESULTS::kHandled : RE::UI_MESSAGE_RESULTS::kPassOn;
     }
 
     const auto &state = Core::State::GetInstance();
