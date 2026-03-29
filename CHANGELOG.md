@@ -1,157 +1,333 @@
-# Changelog
+## [2.0.3] - 2026-03-29
 
-A condensed history of significant changes to SimpleIME.
+### 🐛 Bug Fixes
 
----
+- Add `IsEnabledPaste` to apply 'enable_unicode_paste' configuration
 
-## 2.0.0
+### 🚜 Refactor
 
-### Breaking Changes
-- **Focus Mode removed** — The Permanent / Temporary focus-mode system has been
-  entirely removed. To disable IME input, disable the mod via its toggle; the
-  mod will stop intercepting events and yield control back to the game.
-- **Config keys removed** — `FocusType`, `PermanentFocusManager`-related keys
-  are no longer read.
+- Always release ctrl key when need handle paste.
 
-### Core
-- **IMenu-based charEvent interception** — Replaced the `DispatchInputEvent`
-  global hook (v1.3.0) with `RE::IMenu` at depth-priority 13. `ImeMenu` now
-  sits in the menu stack and intercepts every `GFxCharEvent` while IME
-  composition is active. Characters that should reach the game are
-  re-dispatched as a custom `kImeCharEvent` scaleform event type — a value not
-  used by the vanilla game — so they bypass the interception guard and arrive
-  at the underlying menu cleanly, with no global hook required.
-  Also removes `AddMessageHook` and the old `UiHooks` plumbing.
-- **Flicker-free candidate buffering** — Double-buffered candidate list to fix
-  Microsoft Pinyin (MSPY) one-frame blink. TSF/IMM32 writes to a write-buffer;
-  the render thread reads from a read-buffer, synchronised via
-  `UpdateCandidateUiIfDirty`. `EndUIElement` no longer clears the cache,
-  preventing blinks during MSPY state transitions.
+### 📚 Documentation
 
-### Bug Fixes
-- **Unable to save game** `(user-reported)` — Add `kAllowSaving` flag to `ImeMenu` to avoid user can't save game issue caused by `kAlwaysOpen` flag.
-- **GFxCharEvent memory leak** — `BSUIScaleformData`'s destructor does not
-  free `scaleformEvent`. ImeMenu now collects `kImeCharEvent` pointers during
-  `ProcessMessage` and frees them in `PostDisplay` via `RE::GMemory::Free`.
-  Safe because `PostDisplay` always runs after `ProcessMessage` on the same
-  render thread within a given frame.
-- **LANG_PROFILE_ACTIVATED mis-retention** — `RefreshProfiles` no longer
-  auto-inserts `DEFAULT_LANG_PROFILE`; `OnCharEvent` is gated on
-  `!ImeDisabled()` in addition to `LANG_PROFILE_ACTIVATED`.
-- **imgui.ini location** — ImGui layout is now saved to the plugin interface
-  directory so it persists across game launches and mod updates.
-- **ToolWindow shortcut** — Use `IsKeyChordPressed` to avoid routing through
-  ImGui focus (call-site no longer needs to belong to an ImGui window).
-- **Translator lifetime** — Switched to `static inline` instance to guarantee
-  `ImeWnd` is destroyed before the translator.
+- Improve the integrate SimpleIME requirements doc
 
-### Features
-- **Improved East Asian IME mode feedback** — LanguageBar now shows compact
-  Chinese/Japanese conversion-mode labels, and IME enable/disable keeps the
-  keyboard open state synchronized more consistently across TSF/IMM32 paths.
-- **Auto-detect system default font** — When no fonts are configured, SimpleIME
-  now queries the system UI font via `SPI_GETNONCLIENTMETRICS` +
-  `IDWriteGdiInterop::CreateFontFromLOGFONT`, then probes for a supplementary
-  emoji font (`Segoe UI Emoji` → `Segoe UI Symbol` as fallback) using
-  `IDWriteFontCollection::FindFamilyName`. Hardcoded `simsun.ttc` /
-  `seguiemj.ttf` paths are removed. User-configured font paths still take
-  priority; the system font is only used as the fallback.
-- **Material Design 3 UI** — Full MD3 component library: AppBar, Navigation
-  Rail, Floating Toolbar, Dialog, Chip / ChipGroup, ListItem, FAB, SearchBar,
-  TextField (outlined & filled), CheckBox, Divider, and more. ImeWindow
-  migrated to MD3 components; popup positioning uses
-  `ImGui::FindBestWindowPosForPopupEx`.
-- **Font Builder** — Build and preview custom icon fonts in-game. Nerd Font
-  dependency removed; replaced with a minimal repackaged Lucide TTF containing
-  only the icons actually used, generated at CMake configure time via
-  `fontforge` + Python.
-- **Theme Builder** — HCT / M3 tonal-palette color-scheme editor with
-  live preview and light/dark theme toggle.
-- **New config: `fixInconsistentTextEntryCount`** (default `true`) — Corrects
-  text-entry-count state mismatch that could leave IME enabled when no input
-  field is focused.
-- **RAII UI lifecycle** — Translator and ImeWnd teardown order is now safe;
-  no destruction-order crashes on game exit.
 
-### Refactoring
-- **Focus system simplified** — Removed `FocusImeOrGame` and the permanent/temporary focus-mode split. `WM_NCACTIVATE` now triggers `SyncImeState` (focus is only transferred when the IME actually needs to be active). `TryFocusIme` is reduced to a plain `SetFocus` call; `EnableIme` calls it unconditionally when enabling, and does nothing for focus when disabling. SimpleIME no longer returns keyboard focus to the game window after input ends, as the game's input pipeline (`DirectInput`) does not depend on Win32 focus. Third-party mods that hook into the same keyboard-focus or `WM_CHAR` pipeline during active IME input will conflict.
-- **`Configuration` struct** — Decouples raw TOML field names from the runtime
-  `Settings` struct. Converters synchronise between the two; raw TOML keys no
-  longer pollute application code.
-- **`InputFocusAnchor`** — Replaced menu-stack iteration with a focused-item
-  search (`m_lastFocusMenuIndex` for O(1) updates). Removed the
-  `ComputeScreenMetrics` scaleform hook (called directly from ImeWindow).
-- **`WCharUtils`** — Converted from static-method class to a namespace of free
-  functions; only `std::wstring_view` overloads kept.
-- **`ImeApp` cleanup** — `g_settings` moved into `ImeApp`; `D3DInitHook`
-  renamed to `g_D3DInitHook`; dead/unused hook registrations removed.
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.2...v2.0.3
 
----
+## [2.0.2] - 2026-03-29
 
-## 1.3.0
-- Font size configurable in Settings panel.
-- Full `ImThemes` support; deprecated obsolete color names (`TabActive`, `TabUnfocused`, etc.).
-- Caret display in IME window; new `KEYBOARD_OPEN` state flag for Japanese IME.
-- Fix: clear composition/candidate/alphanumeric state on input-method switch.
-- Fix: discard game keydown/up events when message filter is active.
+### 🚀 Features
 
-## 1.2.0
-- Fix: `Enable Mod` toggle.
+- *(fomod, cmake)* Use the `configure_file` command automatic update the "fomod/info.xml"
 
-## 1.1.2
-- Save and restore UI configuration.
-- Message notify window.
-- `FocusType` refactored to enum class.
-- Various bug fixes: duplicate `PopAndPushType` call, `SendNotifyMessage` return-value check, suppress error messages while mod is disabled.
-- Deprecated config keys: `UI#Default_Theme`, `UI#Default_Language`, `General#Enable_Unicode_Paste`.
+### ⚙️ Miscellaneous Tasks
 
-## 1.1.0
-- Modex: disable forwarding `delete` event to ImGui.
-- Fix `RaceMenu` text-entry IME support via `AllowTextInput` hook (also fixed Console).
-- Dynamic caret screen-position detection with scroll support.
+- *(cliff)* Revert to default config.
+- Bump to cmake version v2.0.2
+- Remove fomod installer.
 
-## 1.0.0
-- Public API for third-party mod integration (`IME_INTEGRATION_INIT`, `IME_COMPOSITION_RESULT`).
-- Unicode paste via `ProcessMessage` hook.
-- Fix: IME state inconsistency when using `Keep Ime Open` with Temporary focus.
-- Fix: TSF message-pump bug causing Microsoft Pinyin deadlock on Shift toggle.
 
-## 0.2.0
-- Introduced `PermanentFocusManager` and `SafeImeManager` strategies; default is `PermanentFocusManager`.
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.1...v2.0.2
 
-## 0.1.0
-- Refactored focus and `IME_DISABLED` state management (no longer associate empty document with TSF).
-- Multi-language support (default: English and Chinese).
+## [2.0.1] - 2026-03-28
 
-## 0.0.8
-- Settings window.
-- FMOD / RaceSexMenu patch detection.
-- ImGui theme loaded from file (`ImThemes` format).
-- Config: `keepimeopen` replaces `Always_Enable_Ime`.
+### 🐛 Bug Fixes
 
-## 0.0.7
-- SteamOverlay: open/close Console Native UI Menu used to detect overlay state and disable IME accordingly.
-- Abort IME composition when ImGui window loses focus.
-- Make composition and candidate windows follow cursor on first appearance.
+- *(TaskQueue)* Fix deadlock caused by holding lock during task execution
 
-## 0.0.6
-- Dynamic IME enable/disable: disable when no menu with a text field is open.
-- Iterate menu stack to detect active input context.
-- Enable when game cursor is visible.
+### ⚙️ Miscellaneous Tasks
 
-## 0.0.5
-- Config refactor; `Property` class optimised; switched back to SimpleINI.
-- TSF candidate support added; TSF/IMM32 switchable via config.
-- Fix: candidate update for Microsoft PinYin.
-- Fix: crash when comp & candidate UI were open on game reload.
-- WcharBuf optimised and covered by unit tests.
+- Separate SimpleIME from JamieMods
+- Update README,Add clang-format
+- Use git-cliff generate changelog for release
+- *(fix)* Remove "-c github" arg to avoid multple config file pass
+- *(fix)* Fix incorrect release body
+- *(fix)* Fix incorrect release body ref;
+- Staff
+- Use body_path instead of body avoid parse bug
 
-## 0.0.4
-- Fix: crash on game close with Japanese IME open.
-- Fix: Modex crash via `ImGuiIO::ClearInputKeys` (delayed `SetFocus` call).
-- ImeWnd / ImeUI launched in standalone thread with own message loop to avoid COM `COINIT_MULTITHREADED` conflicts.
 
-## 0.0.3
-- Initial working release: DirectInput hook, TSF candidate list, tool-window auto-hide on focus loss.
-- UI color configuration.
-- Fix: IMGui cursor dead; fixed memory leaks; improved log source location.
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.0...v2.0.1
+
+## [2.0.0] - 2026-03-28
+
+### 🐛 Bug Fixes
+
+- *(SimpleIME)* Construct ImeOverlay if request show;
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/SimpleIME-v2.0.0-beta...v2.0.0
+
+## [SimpleIME-v2.0.0-beta] - 2026-03-26
+
+### 🚀 Features
+
+- *(ime)* Improve Japanese IME mode tracking and keyboard sync (#8)
+- *(SimpleIME/LanguageBar)* Supports switch to default english input method.
+- *(SimpleIME/FontManager)* Auto-detect system default UI font (ref #13)
+- *(SimpleIME/ToolWindowMenu)* Support UserEvents; refactor ImeOverlay/ToolWindow lifecycle
+- *(SimpleIME/ImeMenu,ToolWindowMenu)* Only block user input when ToolWindow showing
+- *(SimpleIME,Overlay)* Add auto toggle language bar setting and functionality (ref #15)
+
+### 🐛 Bug Fixes
+
+- *(SimpleIME/ImeWindow)* Avoid change ime window position if no pos update policy;
+- *(SimpleIME/InputFocusAnchor)* Fix  the unsigned index overflow error in loop;
+
+### 💼 Other
+
+- Improve Mod main page, SimpleIME demo; remove deprecated configuration;
+- Fix ToggleMenuModeContextIfNeed bug.
+- Sync default configuration;
+
+### 🚜 Refactor
+
+- *(SimpleIME/ImeMenu)* Remove kImeCharEvent validate in IMM32 todo comment;  Fix clang-tidy warnings; Relase static functions to anonymous namespace free funtions;
+- *(State)* Change m_state to atomic for thread safety
+- *(SimpleIME/ImeWindow)* Remove 'IsNeedRelayout' flag to improve positioning
+- *(SimpleIME)* The frame profiler moved to ImeMenu Postdisplay
+- *(SimpleIME)* Fix DEBUG macro usage to _DEBUG; move IME states drawing to separate window.
+- *(SimpleIME)* Only block events when ToolWindow showing
+- *(SimpleIME/TSF)* Deprecate ITfKeystrokeMgr and ITfMessagePump(See ImeWnd::TsfMessageLoop comments)
+- *(SimpleIME/Focus)* Refactor focus system: Only guarantee the minimum state requirements of the mod core.
+
+### 📚 Documentation
+
+- Add SimpleIME's nexus mod articles;
+- Update doxygen input source; Update nexus docs style and explained the event intercept mechanism.
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.0-beta...SimpleIME-v2.0.0-beta
+
+## [2.0.0-beta] - 2026-03-16
+
+### 🚀 Features
+
+- *(SimpleIME/ImeMenu)* Optimize the mouse event capture logic
+- *(SimpleIME/ImeUI)* WIP: support preview installed font;
+- *(SimpleIME/ImeUI)* WIP: support set default font from preview font;
+- *(SimpleIME/ImeUI)* WIP: optimize FontBuilder; move all operations about modify font to NewFrame to avoid crash; consume all ui event when ToolWindowMenu is showing
+- *(SimpleIME/ImeUI)* WIP: optmize PreviewFont
+- *(SimpleIME/ImeUI)* WIP: checkout ImGui to laster master branch; Remove code specific to the docking branch
+- *(SimpleIME/ImeUI)* WIP: refactor PreviewFont & FontBuilder
+- *(SimpleIME/ImeUI)* WIP: By set FontDataOwnedByAtlas to false to avoid copy preview font data during merging.
+- *(Simple/ImeUI)* Support save the FontBuilder build result. Optimize FontBuilder structure.
+- *(Simple/ImeUI, SimpleIME/Configs)* Try to use themeIndex restore theme during init; save themeIndex
+- *(SimpleIME)* Add DebounceTimer: debounce for font preview.
+- *(SimpleIME/Fonts)* Draw search box with a search icon(Channels API)
+- *(SimpleIME/Fonts)* Add the `ScrollY` flag to keep search box always visible;
+- *(SimpleIME/Fonts)* Make AddFont button more eye-catching
+- *(SimpleIME/Fonts)* Show "preview default font" tips.
+- *(SimpleIME/Fonts)* Add some padding to table and file icon
+- *(SimpleIME/Fonts)* Add State enum class to show previewPanel state;
+- TextField: support the `outlined` style.
+- Use the approximation SRGB <-> Linear convertion function to fix `BlendState`.
+- Introduce new button and icon button specifications; Reduce/Remove template functions with different colors schema components.
+- Add Floating Action Button (FAB) specifications and button group configurations; add new Python script & cmake command to build only used icon to TTF; Remove nerdfont
+- Add dependency on icons target in CMake for improved build process
+- Limit floating toolbar position within screen margins(see ToolBar specs)
+- Refactor TextField config param; Fix: Button/TextField/NavItem correct handle the "##" in label(hide text after this).
+- *(SimpleIME/LanguageBar)* Remove unused type aliases
+- Update versioning to include pre-release label and improve display format; re-write NexusMod mod main page
+- Skip benchmark test if no sources;
+- *(m3)* Introduce SameLine to support auto-scale size params;  fix(SimpleIME): Fix ImeWindow 'ENG' the no center align issue
+
+### 🐛 Bug Fixes
+
+- *(SimpleIME/ImeUI)* Configure ImGuiStyle after apply theme correctly;
+- *(SimpleIME/ImeUI)* Support save fontSize correctly;
+- *(Simple/ImeUI)* Revert the cursor blink change;
+- *(Simple)* Fix the refrences that moved Settings memebers;
+- *(SimpleIME/Fonts)* By call `BringWindowToDisplayFront` to keep IME window always in topmost;
+- This SKSE_Scaleform fn return value is meaningless. Should read from `ControlMap`
+- M3Styles#currentScale default value now is 0.0F: avoid `UpdateScaling` early out.
+- LanguageBar: OPEN_SETTINGS only set once;
+- *(M3/SimpleIME/ImeUI)* Correct indentation for EndNavRail call
+- *(SimpleIME)* Fix GFxCharEvent memory leak in ImeMenu
+- *(FontManager)* Add FIXME to investigate performance of font query system; add FIXME for IMM32 composition issue
+- Update legal copyright to MIT License; adjust CPack output settings and add dist to .gitignore; update fmod info
+- *(SimpleIME)* Apply RGB mask to theme source color; update configuration documentation
+- *(SimpleIME/Imm32)* Add missing MarkDirty call after composition text change;
+- *(cmake)* Add the missing build presets
+- *(cmake)* Fix incorrect installation action for lucide license
+- *(SimpleIME/ImeMenu)* Add AllowSaving flag to avoid can't save game
+- *(SimpleIME/AppearancePanel)* Addd AlphaOpaque to disable alpha preview;
+
+### 💼 Other
+
+- Remove UiHooks; remove message filter related UI elements
+- Comment D3d and event hook
+- Tier1: fix bug that Imm32TextService eaten messages it didn't process. ; remove ITfKeystrokeMgr
+- Imm32TextService: by call ImmAssociateContext to enable/disable ime message when focus changed;  render all states key in debug;
+- Fix bug that MsPY candidate list update error in some cases;TextEditor: Collapse selection after inertText; ImeUI: fix bug that the composition strings render incorrectly;
+- ToolWindowMenu now use game cursor to avoid the FixInconsistentTextEntryCount is called
+- AbortIme if click area not ImeMenu;Call CloseCandidate when end composition if candidate is choosing;
+- Remove focus type module; Check "SimpleIME/docs/BUGs.md"
+- Pass 2nd parameter with false to disable commonlib init spdlog
+- No longer show ImGui cursor; destroy HIMC correctly;
+- *(SimpleIME/ImeUI)* Avoid IME UI render area exceeds game window size and overlap text entry; Fix the charBoundaries calculate logic
+- *(SimpleIME/ImeUI)* Support preview text with configured fontSize
+- *(SimpleIME/ImeUI)* Support ime in ToolWindow and consume char event when ToolWindow is showing; scaleform event handleer function return UI_MESSAGE_RESULTS now;
+- *(SimpleIME/ImeUI)* Add help & warning modal
+- Refactor configs module; remove AppConfig; Move all the configuration to the Settings;
+- *(Simple/ImeUI)* Use the gear icon to replace settings's checkbox;
+- *(Simple/ImeUI)* Move the class FontBuilder/View to singleton file; Call AllowTextInput to receive CharEvent;
+- Move `FontManager.cpp` to dir `ui/fonts`
+- Style: Add ToolBar to combine font builder all interact buttons
+- *(SimpleIME/Fonts)* By use the Table `SizingStretchProp` flag to right align a group(ToolBar);
+- SimpleIME: Icon fonts are no longer automatically merged into the default font.
+- Only first TranslatorHolder##RequestUpdateHandle caller can modify the shared Translator
+- Add State machine;remove `context`; ImeMenu/ToolWindowMenu will early out if ImeApp is not initialized.
+- Print log to debugger when spdlog is uninstalled
+- Move ImeUi to ui package
+- Add `ImeWindow`: responsible for drawing IME and automatic layout.
+- Settings: Add zoom config; remove `font_size_scale` config;
+- Intercept all CharEvnet if IM activated. And send all `ImeWnd` received WM_CHARS message to game.
+- Reduce IME window comp/cand padding
+- Shutdown spdlog on dll detach
+- Theme Builder
+- Theme Builder(Adjust styles)
+- Try-catch Draw: shutdown if occur any unexpected exception during `Draw()`;
+- Optimize M3Styles init flow
+- UI layer no longer dependency M3Styles;
+- Fix/update ControlMap#ToggleControls call; small fixes;
+- Refactor ScaleformHook
+- InputFocusAnchor: fix pass value param boundaries incorrect.
+- Remove  the HWND paramter from `CommitCandidate`
+- Colors add two helper functions; And replace all Surface#hoverd/pressed functions call.
+- `ImeController`: Add CommitCandidate method; add Shutdown/IsReady function;
+- Adjust LanguageBar style; modify `fmod` install step and remove `ImThemes.png`;
+- Move FontPreviewPanel implementation to separate file
+- *(SimpleIME)* Support DPI awareness and refactor DPI state
+- Remove and replace Surface/ContentToken -> `ColorRole`;
+- ColorRole moved to namespace Spec;
+- *(ime)* M3 UI redesign & flicker-free candidate buffering**
+- Renamed TextStore::GetText parameters to clarify. more restrict acpStart/End validate.
+- *(SimpleIME)* M3 Scheme ptr moved to AppearancePanel as member from local static prt;  rename members;
+- *(SimpleIME)* Avoid send some document control char to game;
+- Refactor CMake/vcpkg layout for multi-project workspace
+- Move assets/lucide icons into SimpleIME.
+- Common/imguiex -> imguiex/imguiex
+- *(SimpleIME/InputFocusAnchor)* Introduce InvalidateCachedMenuIndex fun and called from MenuOpenClose event callback;   Add ImeWnd thread description
+
+### 🚜 Refactor
+
+- *(SimpleIME/Fonts)* Refactor FontBuilder layout; fix: clear usedFontId vector when reset;
+- EventHandler
+- TranslationLoader. The main section parameter is no longer require.
+- Rename imgui to imguiex and update M3 TextRole
+- *(SimpleIME)* Rename ImGuiManager -> imgui_system; All member static functions ->  free functions
+- Update StyleGuard usage to use template methods for style and color settings
+- Refactor `NavItem`
+- Use M3::BeginCombo & M3::MenuItem refactor zoom list;
+- *(SimpleIME/State)* Optimize state management using bitwise operations
+- *(SimpleIME/TextStore)* Rename parameters for clarity and consistency
+- *(SimpleIME)* Transition to RAII-based UI lifecycle and simplify Translator architecture
+- *(SimpleIME)* Use raw pointer for global translator to avoid destruction order issues
+- *(States)* Rename SetTsfFocus to FocusTextService; restyle `states` UI;
+- *(SimpleIME/LanguageBar)* Re-layout the font builder
+- *(SimpleIME/FontBuilder)* Downgrade some class-static functions to free functions in source file;
+- *(ImeManager)* Remove outdated TODO comment; add FIXME in LanguageBar
+- *(SimpleIME)* Move himc set/restore logic to the ImeController(closes #6)
+
+### 📚 Documentation
+
+- *(README)* Update project description and enhance build instructions; add features and requirements sections
+- *(SimpleIME)* Fill CHANGELOG for v2.0.0-beta release
+- Update CMake preset names for SimpleIME build instructions
+
+### 🧪 Testing
+
+- *(Simple)* Add ConfigSerializerTest; remove unused test
+- Add TestEditorTest
+
+
+### New Contributors
+* @ made their first contribution
+* @Copilot made their first contribution
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/SimpleIME-v1.3.0...v2.0.0-beta
+
+## [SimpleIME-v1.3.0] - 2025-05-30
+
+### 💼 Other
+
+- Discard keydown/up event when message filter is enabled;
+- Re-layout settings panel by TabBar
+- Skip load failed IME
+- Support close message filter once manually
+- Draw caret by TextEditor acp selection; try to enable DPI aware in IME thread;
+- Support config/save Font_Size
+- Remove theme files; update fmod & cpack
+- Supports select a candidate by click; deprecated config Highlight_Text_Color
+- Prepare release 1.2.1
+- Bump to version 1.3.0
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/SimpleIME-v1.2.0...SimpleIME-v1.3.0
+
+## [SimpleIME-v1.2.0] - 2025-05-22
+
+### 💼 Other
+
+- Update mod page;  ErrorNotifier moved to common
+- Optimize window pos update logic
+- Remove hwndGame field; fix: `AddTask`, `ImeWnd::Focus` incorrect return value
+- Add ImeManagerComposerTest; optimize class dependencies
+- Add Settings; Remove ImeUIWidgets;
+- Update default english translation
+- Add `IsShouldEnableIme` to correctly enable ime when checked "KeepImeOpen" or exists text entry;
+- Add ToString() for FunctionHooks, HookData; modify UiHooks and ScaleformHooks to singleton
+- Bump to version 1.2.0
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/SimpleIME-v1.1.2...SimpleIME-v1.2.0
+
+## [1.1.1] - 2025-04-13
+
+### 🐛 Bug Fixes
+
+- Use GFxMovieView#handleEvent handle paset text; send to TopMenu will cause console menu infinite loop process message;
+- Update ConsoleProcessMessageHook se id; OnTextEntryCountChanged support 1.5.97
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v1.1.0...v1.1.1
+
+## [1.1.0] - 2025-03-29
+
+### 💼 Other
+
+- Disable send `delete` event to ImGui: Hook AllowTextInput to  fix `RaceMenu/Console` text entry can't use IME
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v1.0.0...v1.1.0
+
+## [1.0.0] - 2025-03-22
+
+### 💼 Other
+
+- Support sync EnableIme, upgrade and fix bug for IsEnable(now IsWantCaptureInput)
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v0.2.0...v1.0.0
+
+## [0.0.8] - 2025-03-10
+
+### 🐛 Bug Fixes
+
+- Don't install ScaleformHooks if AlwaysActiveIme is true
+
+### 💼 Other
+
+- Integrate ImTheme. parse toml and load as ImGUi theme
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v0.0.6...0.0.8
+
+## [0.0.4] - 2025-02-12
+
+
+### New Contributors
+* @cyfewlp made their first contribution
+
