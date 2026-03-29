@@ -37,7 +37,7 @@ public:
     GFxCharEvent() = default;
 
     explicit GFxCharEvent(std::uint32_t a_wcharCode, std::uint8_t a_keyboardIndex = 0)
-        : GFxEvent(static_cast<RE::GFxEvent::EventType>(Ime::GFxEventTypeEx::kImeCharEvent)), wcharCode(a_wcharCode), keyboardIndex(a_keyboardIndex)
+        : GFxEvent(static_cast<EventType>(GFxEventTypeEx::kImeCharEvent)), wcharCode(a_wcharCode), keyboardIndex(a_keyboardIndex)
     {
     }
 

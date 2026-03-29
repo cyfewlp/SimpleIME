@@ -34,7 +34,7 @@ private:
     /// is handled?
     auto ProcessScaleformEvent(const RE::BSUIScaleformData *data) -> RE::UI_MESSAGE_RESULTS;
     auto OnKeyEvent(RE::GFxEvent *event, bool down) -> RE::UI_MESSAGE_RESULTS;
-    auto OnCharEvent(const GFxCharEvent *charEvent) -> RE::UI_MESSAGE_RESULTS;
+    auto OnCharEvent(const GFxCharEvent *charEvent) const -> RE::UI_MESSAGE_RESULTS;
 
     auto IsPaste(const GFxCharEvent *charEvent) const -> bool;
     void ToggleMenuModeContextIfNeed(bool push);

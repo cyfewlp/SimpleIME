@@ -39,7 +39,7 @@ auto ImeMenuCreator() -> RE::IMenu *
     return pMenu;
 }
 
-std::unordered_map<RE::GFxKey::Code, ImGuiKey> GFxCodeToImGuiKeyTable = {
+const std::unordered_map<RE::GFxKey::Code, ImGuiKey> GFxCodeToImGuiKeyTable = {
     {RE::GFxKey::kAlt,          ImGuiMod_Alt           },
     {RE::GFxKey::kControl,      ImGuiMod_Ctrl          },
     {RE::GFxKey::kShift,        ImGuiMod_Shift         },
@@ -151,11 +151,16 @@ void SendKeyEventToImGui(const RE::GFxKeyEvent *keyEvent, const bool down)
     ImGui::GetIO().AddKeyEvent(imGuiKey, down);
 }
 
+auto IsEnabledPaste() -> bool
+{
+    return ImeApp::GetInstance().GetSettings().input.enableUnicodePaste;
+}
+
 /**
  * We only handle @c CF_UNICODETEXT here. If the clipboard only provides @ CF_TEXT (ANSI), let the game handle paste
  * natively. This avoids incorrect Unicode injection and preserves vanilla behavior.
  */
-bool Paste()
+auto Paste() -> bool
 {
     if (OpenClipboard(nullptr) == FALSE)
     {
@@ -168,7 +173,7 @@ bool Paste()
         return false;
     }
 
-    if (const HANDLE handle = GetClipboardData(CF_UNICODETEXT); handle != nullptr)
+    if (HANDLE handle = GetClipboardData(CF_UNICODETEXT); handle != nullptr)
     {
         if (auto *const textData = static_cast<LPTSTR>(GlobalLock(handle)); textData != nullptr)
         {
@@ -209,7 +214,7 @@ auto OnMouseWheelEvent(RE::GFxEvent *event) -> RE::UI_MESSAGE_RESULTS
     return RE::UI_MESSAGE_RESULTS::kPassOn;
 }
 
-inline void SendCharEventToImGuiIfWant(const GFxCharEvent *charEvent)
+void SendCharEventToImGuiIfWant(const GFxCharEvent *charEvent)
 {
     if (auto &io = ImGui::GetIO(); io.WantTextInput)
     {
@@ -263,7 +268,7 @@ auto ImeMenu::ProcessMessage(RE::UIMessage &a_message) -> RE::UI_MESSAGE_RESULTS
             break;
         }
         case RE::UI_MESSAGE_TYPE::kScaleformEvent: {
-            auto *scaleformData = reinterpret_cast<RE::BSUIScaleformData *>(a_message.data);
+            const auto *scaleformData = reinterpret_cast<RE::BSUIScaleformData *>(a_message.data);
             if (scaleformData != nullptr && scaleformData->scaleformEvent != nullptr)
             {
                 results = ProcessScaleformEvent(scaleformData);
@@ -362,7 +367,7 @@ auto ImeMenu::OnKeyEvent(RE::GFxEvent *event, const bool down) -> RE::UI_MESSAGE
     return RE::UI_MESSAGE_RESULTS::kPassOn;
 }
 
-auto ImeMenu::OnCharEvent(const GFxCharEvent *charEvent) -> RE::UI_MESSAGE_RESULTS
+auto ImeMenu::OnCharEvent(const GFxCharEvent *charEvent) const -> RE::UI_MESSAGE_RESULTS
 {
     SendCharEventToImGuiIfWant(charEvent);
     if (!ImeController::GetInstance()->IsModEnabled())
@@ -370,7 +375,7 @@ auto ImeMenu::OnCharEvent(const GFxCharEvent *charEvent) -> RE::UI_MESSAGE_RESUL
         return RE::UI_MESSAGE_RESULTS::kPassOn;
     }
 
-    if (IsPaste(charEvent))
+    if (IsEnabledPaste() && IsPaste(charEvent))
     {
         return SendFakeControlUpEvent() && Paste() ? RE::UI_MESSAGE_RESULTS::kHandled : RE::UI_MESSAGE_RESULTS::kPassOn;
     }
