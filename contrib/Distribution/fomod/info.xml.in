@@ -1,8 +1,0 @@
-<fomod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Cutleast/FOMOD-Creation-Kit/master/res/schemas/info.xsd">
-	<Name>@PROJECT_NAME@</Name>
-	<Author>Jamie</Author>
-	<Version>@PROJECT_VERSION@</Version>
-	<Website>https://www.nexusmods.com/skyrimspecialedition/mods/140136</Website>
-	<Description>Simple Input Method Editor (IME) for Chinese, Japanese, and Korean.</Description>
-</fomod>

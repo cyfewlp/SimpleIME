@@ -180,19 +180,6 @@ add_custom_target(icons DEPENDS ${ICON_OUT_TTF} ${ICON_OUT_HEADER})
 add_dependencies(${PROJECT_NAME} icons)
 
 ############################################################
-# FOMOD Generate
-set(FOMOD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/contrib/Distribution/fomod)
-set(FOMOD_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/fomod)
-
-file(MAKE_DIRECTORY "${FOMOD_OUTPUT_DIR}")
-configure_file(
-    "${FOMOD_DIR}/info.xml.in"
-    "${FOMOD_OUTPUT_DIR}/info.xml"
-    @ONLY
-)
-message(STATUS "Generated fomod: ${FOMOD_OUTPUT_DIR}/info.xml")
-
-############################################################
 # CPACK
 set(CPACK_GENERATOR "7Z")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
@@ -239,15 +226,9 @@ install(FILES
     DESTINATION "third_party"
     COMPONENT 3rd
 )
-install(DIRECTORY
-    ${FOMOD_OUTPUT_DIR}
-    DESTINATION .
-    COMPONENT Distribution
-)
 cpack_add_component(mod_runtime)
 cpack_add_component(mod_interface_files)
 cpack_add_component(doc)
-cpack_add_component(Distribution)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(BUILD_NAME "Debug")
