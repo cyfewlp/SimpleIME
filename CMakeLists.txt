@@ -12,7 +12,7 @@ endif ()
 
 project(
     SimpleIME
-    VERSION 2.0.2
+    VERSION 2.0.3
     DESCRIPTION "Simple IME support for Skyrim"
     LANGUAGES CXX
 )
@@ -178,6 +178,22 @@ add_custom_command(
 
 add_custom_target(icons DEPENDS ${ICON_OUT_TTF} ${ICON_OUT_HEADER})
 add_dependencies(${PROJECT_NAME} icons)
+
+############################################################
+# Semantic Versioning
+execute_process(
+    COMMAND git describe --tags --abbrev=0
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
+set(PROJECT_VERSION_STRING "v${PROJECT_VERSION}")
+if (NOT GIT_TAG STREQUAL PROJECT_VERSION_STRING)
+  message(FATAL_ERROR "Please update cmake version! git tag ${GIT_TAG} does not match project version ${PROJECT_VERSION_STRING}")
+  return()
+endif ()
 
 ############################################################
 # CPACK
