@@ -1,3 +1,25 @@
+## [2.0.4] - 2026-03-31
+
+### 🐛 Bug Fixes
+
+- Always pass 'paste' event input even we can't handle it.
+
+### 🚜 Refactor
+
+- Migrate the `translator_manager` and `imgui_system` to the common implement in `JamieMods`
+
+### 📚 Documentation
+
+- Update nexus-mod main page
+
+### ⚙️ Miscellaneous Tasks
+
+- Throw error if cmake version incorrect
+- Upgrade the lucide to v1.7.0 and replace the `GitHub` icon to the `layer` icon
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.3...v2.0.4
+
 ## [2.0.3] - 2026-03-29
 
 ### 🐛 Bug Fixes
@@ -11,6 +33,10 @@
 ### 📚 Documentation
 
 - Improve the integrate SimpleIME requirements doc
+
+### ⚙️ Miscellaneous Tasks
+
+- Keep a changelog(but custom style)!
 
 
 **Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.2...v2.0.3

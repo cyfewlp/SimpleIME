@@ -13,6 +13,7 @@
 #include "hooks/WinHooks.h"
 #include "ime/ImeController.h"
 #include "imguiex/ErrorNotifier.h"
+#include "imguiex/imgui_manager.h"
 #include "imguiex/imguiex_m3.h"
 #include "log.h"
 #include "menu/ImeMenu.h"
@@ -20,11 +21,9 @@
 #include "path_utils.h"
 #include "ui/Settings.h"
 #include "ui/fonts/FontManager.h"
-#include "ui/imgui_system.h"
 
 #include <basetsd.h>
 #include <future>
-#include <imguiex/imgui_manager.h>
 #include <memory>
 #include <queue>
 #include <thread>
