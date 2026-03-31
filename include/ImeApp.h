@@ -71,7 +71,7 @@ public:
         constexpr auto IsInitialized() const { return m_stateKey == StateKey::INITIALIZED; }
     };
 
-    explicit ImeApp(std::filesystem::path configPath);
+    explicit ImeApp(const std::filesystem::path& configPath);
     ~ImeApp() = default;
 
     ImeApp(const ImeApp &other)                   = delete;

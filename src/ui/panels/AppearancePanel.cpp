@@ -12,15 +12,12 @@
 #include "imguiex/imguiex_enum_wrap.h"
 #include "imguiex/imguiex_m3.h"
 #include "imguiex/imguiex_m3_slider.h"
-#include "imguiex/m3/facade/button_groups.h"
 #include "imguiex/m3/facade/slider.h"
 #include "imguiex/m3/spec/layout.h"
 #include "imguiex/m3/spec/text_field.h"
 #include "path_utils.h"
 #include "ui/Settings.h"
-#include "ui/imgui_system.h"
 
-#include <cassert>
 #include <imgui.h>
 
 namespace Ime
@@ -402,7 +399,7 @@ void AppearancePanel::DrawLanguagesCombo(Settings::Appearance &appearance) const
 
     if (clicked)
     {
-        i18n::UpdateTranslator(appearance.language, "english");
+        i18n::UpdateTranslator(appearance.language, "english", utils::GetPluginInterfaceDir());
     }
 }
 } // namespace Ime

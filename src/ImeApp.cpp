@@ -1,6 +1,5 @@
 #include "ImeApp.h"
 
-#include "ImeWnd.hpp"
 #include "WCharUtils.h"
 #include "common.h"
 #include "configs/ConfigSerializer.h"
@@ -14,6 +13,7 @@
 #include "hooks/WinHooks.h"
 #include "ime/ImeController.h"
 #include "imguiex/ErrorNotifier.h"
+#include "imguiex/imguiex_m3.h"
 #include "log.h"
 #include "menu/ImeMenu.h"
 #include "menu/ToolWindowMenu.h"
@@ -24,6 +24,7 @@
 
 #include <basetsd.h>
 #include <future>
+#include <imguiex/imgui_manager.h>
 #include <memory>
 #include <queue>
 #include <thread>
@@ -45,7 +46,7 @@ public:
         }
     }
 
-    ~InitErrorMessageShow()
+    ~InitErrorMessageShow() override
     {
         if (auto *ui = RE::UI::GetSingleton(); m_installedSink && ui != nullptr)
         {
@@ -53,7 +54,8 @@ public:
         }
     }
 
-    auto ProcessEvent(const RE::MenuOpenCloseEvent *a_event, RE::BSTEventSource<RE::MenuOpenCloseEvent> *) -> RE::BSEventNotifyControl override
+    auto ProcessEvent(const RE::MenuOpenCloseEvent *a_event, RE::BSTEventSource<RE::MenuOpenCloseEvent> * /*a_eventSource*/)
+        -> RE::BSEventNotifyControl override
     {
         if (a_event->menuName == RE::MainMenu::MENU_NAME && a_event->opening)
         {
@@ -166,12 +168,12 @@ auto GetDefaultFontFilePathList() -> std::vector<std::string>
 }
 } // namespace
 
-ImeApp::ImeApp(std::filesystem::path configPath)
+ImeApp::ImeApp(const std::filesystem::path &configPath)
 {
     const auto configuration = Ime::ConfigSerializer::LoadConfiguration(configPath);
     m_settings               = Ime::ConvertConfigurationToSettings(configuration);
 
-    SksePlugin::InitializeLogging({m_settings.logging.level, m_settings.logging.flushLevel});
+    SksePlugin::InitializeLogging({.level = m_settings.logging.level, .flushLevel = m_settings.logging.flushLevel});
 }
 
 auto ImeApp::GetInstance() -> ImeApp &
@@ -190,15 +192,15 @@ void ImeApp::OnInputLoaded()
 void ImeApp::Uninitialize()
 {
     SaveSettings();
-    UI::DestroyM3();
-    UI::Shutdown();
+    ImGuiEx::M3::Destroy();
+    ImGuiEx::Shutdown();
     Events::UnInstallEventSinks(); // should safety
     Hooks::WinHooks::Uninstall();  // should move to dll_detach, but it's safe.
     g_pInitErrorMessageShow.reset();
     if (m_state.IsInitialized())
     {
         UninstallHooks();
-        if (RealWndProc)
+        if (RealWndProc != nullptr)
         {
             SetWindowLongPtrA(m_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(RealWndProc));
             RealWndProc = nullptr;
@@ -295,10 +297,10 @@ void ImeApp::Start(const RE::BSGraphics::RendererData &renderData)
     auto              *device      = reinterpret_cast<ID3D11Device *>(renderData.forwarder);
     auto              *context     = reinterpret_cast<ID3D11DeviceContext *>(renderData.context);
 
-    UI::Initialize(m_hWnd, device, context);
+    ImGuiEx::Initialize(m_hWnd, device, context);
     const auto defaultFontFilePathList = GetDefaultFontFilePathList();
-    (void)UI::AddPrimaryFont(m_settings.resources.fontPathList, defaultFontFilePathList);
-    UI::InitializeM3(utils::GetInterfacePath() / SIMPLE_IME / Settings::ICON_FILE, m_settings.appearance.schemeConfig);
+    (void)ImGuiEx::AddPrimaryFont(m_settings.resources.fontPathList, defaultFontFilePathList);
+    ImGuiEx::M3::Initialize(utils::GetInterfaceFile(Settings::ICON_FILE), m_settings.appearance.schemeConfig);
 
     std::thread childWndThread([&ensureInitialized, this] -> void {
         SetThreadDescription(GetCurrentThread(), L"SimpleIME Message Thread");
@@ -381,12 +383,12 @@ void ImeApp::Draw()
     {
         return;
     }
-    UI::NewFrame();
+    ImGuiEx::NewFrame();
 
     m_imeWnd.Draw(m_settings);
 
-    UI::EndFrame();
-    UI::Render();
+    ImGuiEx::EndFrame();
+    ImGuiEx::Render();
 }
 
 auto ImeApp::MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> LRESULT
