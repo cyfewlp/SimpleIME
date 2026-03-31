@@ -377,9 +377,9 @@ auto ImeMenu::OnCharEvent(const GFxCharEvent *charEvent) const -> RE::UI_MESSAGE
         return RE::UI_MESSAGE_RESULTS::kPassOn;
     }
 
-    if (IsEnabledPaste() && IsPaste(charEvent))
+    if (IsPaste(charEvent))
     {
-        return ReleaseCtrl() && Paste() ? RE::UI_MESSAGE_RESULTS::kHandled : RE::UI_MESSAGE_RESULTS::kPassOn;
+        return IsEnabledPaste() && ReleaseCtrl() && Paste() ? RE::UI_MESSAGE_RESULTS::kHandled : RE::UI_MESSAGE_RESULTS::kPassOn;
     }
 
     const auto &state = Core::State::GetInstance();
