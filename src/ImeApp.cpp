@@ -20,6 +20,7 @@
 #include "menu/ToolWindowMenu.h"
 #include "path_utils.h"
 #include "ui/Settings.h"
+#include "ui/SettingsManager.h"
 #include "ui/fonts/FontManager.h"
 
 #include <basetsd.h>
@@ -82,22 +83,16 @@ constexpr auto INIT_TIMEOUT_SECONDS = 500s;
 #else
 constexpr auto INIT_TIMEOUT_SECONDS = 5s;
 #endif
-constexpr auto                          CONFIG_FILE_NAME = "SimpleIME.toml";
-std::unique_ptr<Ime::ImeApp>            g_instance       = nullptr;
+std::unique_ptr<Ime::ImeApp>            g_instance = nullptr;
 std::unique_ptr<InitErrorMessageShow>   g_pInitErrorMessageShow(nullptr);
 std::unique_ptr<Hooks::D3DInitHookData> g_D3DInitHook = nullptr; ///< Only install once, should not be a member of `ImeApp`.
-
-auto ConfigFilePath() -> std::filesystem::path
-{
-    return utils::GetInterfacePath() / SIMPLE_IME / CONFIG_FILE_NAME;
-}
 } // namespace
 
 namespace SksePlugin
 {
 auto Initialize() -> bool
 {
-    g_instance    = std::make_unique<Ime::ImeApp>(ConfigFilePath());
+    g_instance    = std::make_unique<Ime::ImeApp>();
     g_D3DInitHook = std::make_unique<Hooks::D3DInitHookData>(Ime::D3DInit);
     Hooks::WinHooks::Install();
 
@@ -167,10 +162,9 @@ auto GetDefaultFontFilePathList() -> std::vector<std::string>
 }
 } // namespace
 
-ImeApp::ImeApp(const std::filesystem::path &configPath)
+ImeApp::ImeApp()
 {
-    const auto configuration = Ime::ConfigSerializer::LoadConfiguration(configPath);
-    m_settings               = Ime::ConvertConfigurationToSettings(configuration);
+    m_settings = SettingsManager::Load();
 
     SksePlugin::InitializeLogging({.level = m_settings.logging.level, .flushLevel = m_settings.logging.flushLevel});
 }
@@ -362,8 +356,7 @@ void ImeApp::Shutdown()
 
 void ImeApp::SaveSettings()
 {
-    const auto config = Ime::ConvertSettingsToConfiguration(m_settings);
-    Ime::ConfigSerializer::SaveConfiguration(ConfigFilePath(), config);
+    SettingsManager::Save(m_settings);
 }
 
 void ImeApp::InstallHooks()

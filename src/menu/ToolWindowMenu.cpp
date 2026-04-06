@@ -53,6 +53,7 @@ auto ToolWindowMenu::ProcessMessage(RE::UIMessage &a_message) -> RE::UI_MESSAGE_
         }
         case RE::UI_MESSAGE_TYPE::kHide: {
             ImeController::GetInstance()->SyncImeState(); // TODO: really need this?
+            ImeApp::GetInstance().SaveSettings();
             results = RE::UI_MESSAGE_RESULTS::kHandled;
             break;
         }

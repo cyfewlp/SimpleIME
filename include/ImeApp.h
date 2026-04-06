@@ -71,7 +71,7 @@ public:
         constexpr auto IsInitialized() const { return m_stateKey == StateKey::INITIALIZED; }
     };
 
-    explicit ImeApp(const std::filesystem::path& configPath);
+    explicit ImeApp();
     ~ImeApp() = default;
 
     ImeApp(const ImeApp &other)                   = delete;
@@ -84,6 +84,7 @@ public:
     void OnInputLoaded();
     void Draw();
     void Uninitialize();
+    void SaveSettings();
 
     constexpr auto GetGameHWND() const -> HWND { return m_hWnd; }
 
@@ -99,7 +100,6 @@ private:
     void OnD3DInit();
     void Start(const RE::BSGraphics::RendererData &renderData);
     void Shutdown();
-    void SaveSettings();
 
     static void InstallHooks();
     static void UninstallHooks();
