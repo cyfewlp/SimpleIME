@@ -48,6 +48,7 @@ struct Settings
     bool          enableMod                     = true; ///< modify on UI thread every frame.
     bool          enableTsf                     = true;
     bool          fixInconsistentTextEntryCount = true; ///< modify in ToolWindow(ImeMenu). no need sync because ImeMenu is the topmost menu;
+    bool          autoToggleKeyboard            = false;
 
     struct Logging
     {
@@ -87,6 +88,7 @@ inline auto GetDefaultSettings() -> Settings
         .enableMod                     = true,
         .enableTsf                     = true,
         .fixInconsistentTextEntryCount = true,
+        .autoToggleKeyboard            = true,
         .logging                       = {.level = spdlog::level::info, .flushLevel = spdlog::level::info},
         .resources                     = {.translationDir = "Data/interface/SimpleIME", .fontPathList = {}},
         .appearance =

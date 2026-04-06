@@ -238,6 +238,11 @@ auto ImeWnd::FocusTextService(const bool focus) const -> bool
     return m_textService->OnFocus(focus);
 }
 
+auto ImeWnd::ToggleKeyboard(const bool open) const -> void
+{
+    m_textService->ToogleKeyboard(open);
+}
+
 auto ImeWnd::IsFocused() const -> bool
 {
     return m_fFocused;

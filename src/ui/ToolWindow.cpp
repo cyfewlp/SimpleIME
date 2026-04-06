@@ -134,6 +134,8 @@ void ToolWindow::DrawMenuBehaviour(Settings &settings) const
                 Translate("Settings.Behaviour.FixInconsistentTextEntryCount"), settings.fixInconsistentTextEntryCount, ICON_CHECK
             );
             ImGuiEx::M3::SetItemToolTip(Translate("Settings.Behaviour.FixInconsistentTextEntryCountToolTip"));
+            (void)ImGuiEx::M3::Checkbox(Translate("Settings.Behaviour.AutoToggleKeyboard"), settings.autoToggleKeyboard, ICON_CHECK);
+            ImGuiEx::M3::SetItemToolTip(Translate("Settings.Behaviour.AutoToggleKeyboardToolTip"));
 
             DrawStates();
             DrawFeatures(settings);

@@ -19,6 +19,7 @@ TEST(ConfigSerializerTest, should_return_default_configuration_if_file_not_exist
     EXPECT_EQ(configuration.enableMod, defaultConfiguration.enableMod);
     EXPECT_EQ(configuration.enableTsf, defaultConfiguration.enableTsf);
     EXPECT_EQ(configuration.fixInconsistentTextEntryCount, defaultConfiguration.fixInconsistentTextEntryCount);
+    EXPECT_EQ(configuration.autoToggleKeyboard, defaultConfiguration.autoToggleKeyboard);
     EXPECT_EQ(configuration.logging.level, defaultConfiguration.logging.level);
     EXPECT_EQ(configuration.logging.flushLevel, defaultConfiguration.logging.flushLevel);
 
@@ -54,6 +55,7 @@ TEST(ConfigSerializerTest, should_save_load_configuration)
     EXPECT_EQ(loadedConfig.enableMod, toSaveConfiguration.enableMod);
     EXPECT_EQ(loadedConfig.enableTsf, toSaveConfiguration.enableTsf);
     EXPECT_EQ(loadedConfig.fixInconsistentTextEntryCount, toSaveConfiguration.fixInconsistentTextEntryCount);
+    EXPECT_EQ(loadedConfig.autoToggleKeyboard, toSaveConfiguration.autoToggleKeyboard);
     EXPECT_EQ(loadedConfig.logging.level, toSaveConfiguration.logging.level);
     EXPECT_EQ(loadedConfig.logging.flushLevel, toSaveConfiguration.logging.flushLevel);
 

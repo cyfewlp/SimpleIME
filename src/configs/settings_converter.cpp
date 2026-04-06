@@ -245,6 +245,7 @@ auto ConvertConfigurationToSettings(const Configuration &config) -> Settings
     settings.enableMod                     = config.enableMod;
     settings.enableTsf                     = config.enableTsf;
     settings.fixInconsistentTextEntryCount = config.fixInconsistentTextEntryCount;
+    settings.autoToggleKeyboard            = config.autoToggleKeyboard;
 
     if (const auto shortCut = Converter<ImGuiKeyChord>::fromString(config.shortcut); shortCut.has_value())
     {
@@ -305,6 +306,7 @@ auto ConvertSettingsToConfiguration(const Settings &settings) -> Configuration
     configuration.enableMod                     = settings.enableMod;
     configuration.enableTsf                     = settings.enableTsf;
     configuration.fixInconsistentTextEntryCount = settings.fixInconsistentTextEntryCount;
+    configuration.autoToggleKeyboard            = settings.autoToggleKeyboard;
 
     ErrorNotifier errorNotifier = ErrorNotifier::GetInstance();
     if (const auto shortcut = Converter<ImGuiKeyChord>::toString(settings.shortcut); shortcut.has_value())

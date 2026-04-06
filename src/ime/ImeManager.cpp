@@ -65,6 +65,11 @@ auto ImeManager::EnableIme(bool enable) -> Result
             state.Set(State::IME_DISABLED);
             success = m_imeWnd->FocusTextService(false);
         }
+        if (m_settings.autoToggleKeyboard)
+        {
+            logger::debug("Toggle the keyboard state...");
+            m_imeWnd->ToggleKeyboard(enable);
+        }
 
         if (!success)
         {

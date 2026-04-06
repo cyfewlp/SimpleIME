@@ -51,6 +51,7 @@ struct Configuration
     bool        enableMod;
     bool        enableTsf;
     bool        fixInconsistentTextEntryCount;
+    bool        autoToggleKeyboard;
     Logging     logging;
     Resources   resources;
     Appearance  appearance;
@@ -66,6 +67,7 @@ constexpr auto GetDefaultConfiguration() -> Configuration
         .enableMod                     = true,
         .enableTsf                     = true,
         .fixInconsistentTextEntryCount = true,
+        .autoToggleKeyboard            = false,
         .logging                       = {.level = "", .flushLevel = ""},
         .resources                     = {.translationDir = "", .fontPathList = {}},
         .appearance =

@@ -71,13 +71,20 @@ auto TextService::OnFocus(bool focus) -> bool
     {
         hr = m_textStore->ClearFocus();
     }
-    m_keyboardOpenCloseCompartment->SetValue(static_cast<DWORD>(focus)); // true -> open, false -> close
     const auto succeeded = SUCCEEDED(hr);
     if (succeeded)
     {
         State::GetInstance().Set(State::TEXT_SERVICE_FOCUS, focus);
     }
     return succeeded;
+}
+
+auto TextService::ToogleKeyboard(bool open) -> void
+{
+    if (const auto hr = m_keyboardOpenCloseCompartment->SetValue(static_cast<ULONG>(open)); FAILED(hr))
+    {
+        logger::debug("Can't toggle keyboard: {:#X}", hr);
+    }
 }
 
 auto TextService::SetConversionMode(DWORD conversionMode) -> bool

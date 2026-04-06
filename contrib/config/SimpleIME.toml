@@ -13,6 +13,9 @@ enable_mod = true
 # 罕见的修复开关，打开时: 如果鼠标不可见，但依然存在激活的输入框, Mod 会主动禁用 IME 输入. 因为鼠标不可见通常意味着当前处于正常游戏阶段
 # 但是如果第三方 Menu 存在激活的输入框，但禁用了鼠标(例如某些极简 UI)，此开关可能会错误的禁用 IME，需要关闭此开关来修复这个问题
 fix_inconsistent_text_entry_count = true
+# 自动打开/关闭键盘
+# 在 IME 激活/关闭的同时打开/关闭键盘(切换本地语言/英文输入状态)
+auto_toggle_keyboard = false
 
 [core.logging]
 # "trace", "debug", "info", "warn", "error", "critical", "off"

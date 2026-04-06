@@ -131,7 +131,6 @@ auto Imm32TextService::OnFocus(bool focus) -> bool
 
         if (HIMC himc = ImmGetContext(m_imeHwnd); himc != nullptr)
         {
-            UpdateOpenStatus(himc, focus ? TRUE : FALSE);
             UpdateConversionMode(himc);
             ImmReleaseContext(m_imeHwnd, himc);
         }
@@ -142,6 +141,16 @@ auto Imm32TextService::OnFocus(bool focus) -> bool
     }
     State::GetInstance().Set(State::TEXT_SERVICE_FOCUS, focus);
     return ITextService::OnFocus(focus);
+}
+
+auto Imm32TextService::ToogleKeyboard(bool open) -> void
+{
+    if (HIMC himc = ImmGetContext(m_imeHwnd); himc != nullptr)
+    {
+        UpdateOpenStatus(himc, open ? TRUE : FALSE);
+        UpdateConversionMode(himc);
+        ImmReleaseContext(m_imeHwnd, himc);
+    }
 }
 
 // This method does not work as expected

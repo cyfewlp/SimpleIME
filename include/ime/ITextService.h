@@ -63,6 +63,8 @@ public:
 
     virtual auto OnFocus([[maybe_unused]] bool focus) -> bool { return true; }
 
+    virtual auto ToogleKeyboard(bool open) -> void = 0;
+
     virtual auto ProcessImeMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> bool = 0;
 
     /**
@@ -133,6 +135,8 @@ public:
     void OnStart(HWND hWnd) override { m_imeHwnd = hWnd; }
 
     bool OnFocus(bool focus) override;
+
+    auto ToogleKeyboard(bool open) -> void override;
 
     auto CommitCandidate(DWORD index) -> bool override;
 

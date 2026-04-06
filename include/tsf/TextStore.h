@@ -284,6 +284,8 @@ public:
 
     auto OnFocus(bool focus) -> bool override;
 
+    auto ToogleKeyboard(bool open) -> void override;
+
     auto CommitCandidate(DWORD index) -> bool override { return m_textStore->CommitCandidate(index); }
 
     auto SetConversionMode(DWORD conversionMode) -> bool override;

@@ -54,6 +54,7 @@ public:
 
     auto Focus() const -> void;
     auto FocusTextService(bool focus) const -> bool;
+    auto ToggleKeyboard(bool open) const -> void;
     auto IsFocused() const -> bool;
     auto SendMessageToIme(UINT uMsg, WPARAM wparam, LPARAM lparam) const -> LRESULT;
     auto SendNotifyMessageToIme(UINT uMsg, WPARAM wparam, LPARAM lparam) const -> bool;

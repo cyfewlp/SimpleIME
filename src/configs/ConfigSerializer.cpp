@@ -6,14 +6,11 @@
 #include "configs/configuration.h"
 #include "log.h"
 #include "toml/toml.hpp"
-#include "ui/Settings.h"
 
 #include <algorithm>
-#include <cctype>
 #include <exception>
 #include <ios>
 #include <iosfwd>
-#include <spdlog/common.h>
 #include <string>
 #include <vector>
 
@@ -35,6 +32,7 @@ constexpr auto KEY_SECTION_LOGGING    = "logging";
 constexpr auto KEY_ENABLE_TSF                        = "enable_tsf";
 constexpr auto KEY_ENABLE_MOD                        = "enable_mod";
 constexpr auto KEY_FIX_INCONSISTENT_TEXT_ENTRY_COUNT = "fix_inconsistent_text_entry_count";
+constexpr auto KEY_AUTO_TOGGLE_KEYBOARD              = "auto_toggle_keyboard";
 
 // Logging keys
 constexpr auto KEY_LOG_LEVEL       = "level";
@@ -83,6 +81,10 @@ auto FormatConfigurationToToml(const Configuration &configuration) -> std::strin
         " 罕见的修复开关，打开时: 如果鼠标不可见，但依然存在激活的输入框, Mod 会主动禁用 IME 输入. 因为鼠标不可见通常意味着当前处于正常游戏阶段",
         " 但是如果第三方 Menu 存在激活的输入框，但禁用了鼠标(例如某些极简 UI)，此开关可能会错误的禁用 IME，需要关闭此开关来修复这个问题",
     };
+    const Comments autoToggleKeyboardComment = {
+        " 自动打开/关闭键盘",
+        " 在 IME 激活/关闭的同时打开/关闭键盘(切换本地语言/英文输入状态)",
+    };
     const Comments fontPathListComment = {
         " [可选] 用于 SimpleIME 的字体文件路径列表，支持 ttf 和 otf 格式，Mod 会按照列表顺序加载字体并合并到一起",
         " 如果列表为空或所有字体文件都无效，将使用系统默认字体",
@@ -99,6 +101,7 @@ auto FormatConfigurationToToml(const Configuration &configuration) -> std::strin
          {KEY_ENABLE_TSF, {configuration.enableTsf, enableTsfComment}},
          {KEY_ENABLE_MOD, {configuration.enableMod, enableModComment}},
          {KEY_FIX_INCONSISTENT_TEXT_ENTRY_COUNT, {configuration.fixInconsistentTextEntryCount, fixInconsistentTextEntryCountComment}},
+         {KEY_AUTO_TOGGLE_KEYBOARD, {configuration.autoToggleKeyboard, autoToggleKeyboardComment}},
          {KEY_SECTION_LOGGING, logging}}
     };
     const toml::table resources{
@@ -148,6 +151,7 @@ auto ParseConfigurationFromToml(toml::value &rawToml) -> Configuration
         findAndSet(coreToml, KEY_ENABLE_TSF, config.enableTsf);
         findAndSet(coreToml, KEY_ENABLE_MOD, config.enableMod);
         findAndSet(coreToml, KEY_FIX_INCONSISTENT_TEXT_ENTRY_COUNT, config.fixInconsistentTextEntryCount);
+        findAndSet(coreToml, KEY_AUTO_TOGGLE_KEYBOARD, config.autoToggleKeyboard);
         if (coreToml.contains(KEY_SECTION_LOGGING))
         {
             auto &loggingToml         = coreToml[KEY_SECTION_LOGGING];

@@ -129,6 +129,8 @@ TEST(ConfigurattionToSettingsTest, should_set_base_type_member_value_from_config
 
     EXPECT_EQ(settings.enableMod, configuration.enableMod);
     EXPECT_EQ(settings.enableTsf, configuration.enableTsf);
+    EXPECT_EQ(settings.fixInconsistentTextEntryCount, configuration.fixInconsistentTextEntryCount);
+    EXPECT_EQ(settings.autoToggleKeyboard, configuration.autoToggleKeyboard);
 
     EXPECT_EQ(settings.resources.translationDir, configuration.resources.translationDir);
     EXPECT_EQ(settings.resources.fontPathList, configuration.resources.fontPathList);
@@ -156,6 +158,7 @@ TEST(ConfigurattionToSettingsTest, should_convert_default_configuration_to_defau
     EXPECT_EQ(settings.enableMod, defaultSettings.enableMod);
     EXPECT_EQ(settings.enableTsf, defaultSettings.enableTsf);
     EXPECT_EQ(settings.fixInconsistentTextEntryCount, defaultSettings.fixInconsistentTextEntryCount);
+    EXPECT_EQ(settings.autoToggleKeyboard, defaultSettings.autoToggleKeyboard);
     EXPECT_EQ(settings.shortcut, defaultSettings.shortcut);
 
     EXPECT_EQ(settings.logging.level, defaultSettings.logging.level);

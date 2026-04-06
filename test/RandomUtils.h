@@ -44,6 +44,7 @@ inline auto GetRandomConfiguation() -> Ime::Configuration
     configuration.enableMod                     = random.NextBool();
     configuration.enableTsf                     = random.NextBool();
     configuration.fixInconsistentTextEntryCount = random.NextBool();
+    configuration.autoToggleKeyboard            = random.NextBool();
 
     configuration.logging.level      = random.NextString(10);
     configuration.logging.flushLevel = random.NextString(10);
