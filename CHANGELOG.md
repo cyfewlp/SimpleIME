@@ -1,3 +1,12 @@
+## [2.2.0] - 2026-04-06
+
+### 🚀 Features
+
+- Save settings when tool-window menu hide;
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.1.0...v2.2.0
+
 ## [2.1.0] - 2026-04-06
 
 ### 🚀 Features
