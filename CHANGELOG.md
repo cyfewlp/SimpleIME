@@ -1,3 +1,16 @@
+## [2.1.0] - 2026-04-06
+
+### 🚀 Features
+
+- Support configure feature `auto toggle keyboard`: default value now is false;
+
+### ⚙️ Miscellaneous Tasks
+
+- Upgrade imgui/JamieMods
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.0.4...v2.1.0
+
 ## [2.0.4] - 2026-03-31
 
 ### 🐛 Bug Fixes
