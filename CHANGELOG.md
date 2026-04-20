@@ -1,3 +1,12 @@
+## [2.2.1] - 2026-04-20
+
+### 🐛 Bug Fixes
+
+- `ToolWindowMenu`: allow saving during ToolWindowMenu debounce and reduced timeout to 5s
+
+
+**Full Changelog**: https://github.com/cyfewlp/SimpleIME/compare/v2.2.0...v2.2.1
+
 ## [2.2.0] - 2026-04-06
 
 ### 🚀 Features

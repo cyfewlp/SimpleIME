@@ -12,7 +12,7 @@ endif ()
 
 project(
     SimpleIME
-    VERSION 2.2.0
+    VERSION 2.2.1
     DESCRIPTION "Simple IME support for Skyrim"
     LANGUAGES CXX
 )
