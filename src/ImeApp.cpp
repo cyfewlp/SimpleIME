@@ -303,7 +303,7 @@ void ImeApp::Start(const RE::BSGraphics::RendererData &renderData)
             ensureInitialized.set_value(true);
             // we can't call ensureInitialized after create child window, will cause deadlock.
             m_imeWnd.CreateHost(m_hWnd, m_settings);
-            m_imeWnd.Run();
+            ImeWnd::Run();
         }
         catch (...)
         {

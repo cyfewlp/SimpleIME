@@ -202,7 +202,7 @@ void ImeWnd::CreateHost(HWND hWndParent, Settings &settings)
     OnCreated(settings);
 }
 
-void ImeWnd::Run() const
+void ImeWnd::Run()
 {
     MSG  msg  = {};
     bool done = false;

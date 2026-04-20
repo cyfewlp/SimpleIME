@@ -70,7 +70,7 @@ auto ToolWindowMenu::ProcessMessage(RE::UIMessage &a_message) -> RE::UI_MESSAGE_
 auto ToolWindowMenu::Creator() -> IMenu *
 {
     auto *pMenu = new ToolWindowMenu();
-    pMenu->menuFlags.set(Flag::kPausesGame, Flag::kUsesCursor);
+    pMenu->menuFlags.set(Flag::kPausesGame, Flag::kUsesCursor, Flag::kAllowSaving);
     pMenu->depthPriority = 11;
 
     // pMenu->inputContext.set(RE::UserEvents::INPUT_CONTEXT_ID::kMenuMode);

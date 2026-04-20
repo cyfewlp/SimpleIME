@@ -23,7 +23,7 @@ class M3Styles;
 namespace Ime
 {
 static inline auto      g_MainClassName                  = L"SimpleIME";
-static constexpr size_t TRANSLATOR_DEBONCE_DELAY_SECONDS = 10LLU;
+static constexpr size_t TRANSLATOR_DEBONCE_DELAY_SECONDS = 5LLU;
 
 class ImeWnd
 {
@@ -41,6 +41,8 @@ public:
     void Initialize(bool enableTsf) noexcept(false);
     void UnInitialize() noexcept;
 
+    static void Run();
+
     /**
      * Work on standalone thread and run own message loop.
      * Mainly avoid other plugins that init COM
@@ -50,7 +52,6 @@ public:
      * @param settings @Settings
      */
     void CreateHost(HWND hWndParent, Settings &settings);
-    void Run() const;
 
     auto Focus() const -> void;
     auto FocusTextService(bool focus) const -> bool;
